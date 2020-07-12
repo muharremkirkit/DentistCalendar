@@ -1,0 +1,263 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Styles{
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="~/lib/fullcalendar/core/main.css" rel="stylesheet" />
+    <link href="~/lib/fullcalendar/daygrid/main.css" rel="stylesheet" />
+    <link href="~/lib/fullcalendar/timegrid/main.css" rel="stylesheet" />
+    <link href="~/lib/fullcalendar/list/main.css" rel="stylesheet" />
+    <link href="~/lib/fullcalendar/bootstrap/main.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-md-2">
+        <div id="otherEvents">
+            <p><strong>Sürüklenebilir Etkinlikler</strong></p>
+            <div class="fc-event" id="isValid">1.Etkinlik</div> <br />
+            <div class="fc-event" id="isNotValid">2.Etkinlik</div> <br />
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div id="calendar">
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+
+    <script src="~/lib/fullcalendar/core/main.js"></script>
+    <script src="~/lib/fullcalendar/daygrid/main.js"></script>
+    <script src="~/lib/fullcalendar/timegrid/main.js"></script>
+    <script src="~/lib/fullcalendar/list/main.js"></script>
+    <script src="~/lib/fullcalendar/interaction/main.js"></script>
+    <script src="~/lib/fullcalendar/bootstrap/main.js"></script>
+    <script src="~/lib/fullcalendar/core/locales/tr.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var draggableEl = document.getElementById('otherEvents');
+
+            var Draggable = FullCalendarInteraction.Draggable;
+            new Draggable(draggableEl, {
+                itemSelector: '.fc-event',
+                eventData: function (eventEl) {
+                    return {
+                        title: eventEl.innerText,
+                        duration: '01:30'
+                    };
+                }
+            });
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['interaction', 'dayGrid', 'timeGrid', 'list', 'bootstrap'],
+                themeSystem: 'bootstrap',  //default olarak standart gelir
+                bootstrapFontAwesome: {  //https://fontawesome.com/v4.7.0/icons/ iconları aldığım site
+                    dayGridMonth: 'calendar',
+                    prev: 'fa-chevron-circle-left',
+                    next: 'fa-chevron-circle-right',
+                    listWeek: 'fa-list'
+                },
+                locale: 'tr',
+                header: {
+                    left: 'prev, next, today, addEvent',
+                    center: 'title',
+                    right: 'dayGridMonth, timeGridWeek , timeGridDay, timeGridFourDays, listWeek'
+                    //listDay,listWeek,listMonth,listYear olarak liste oluşturabiliriz.
+                },
+                footer: {
+                    left: 'prevYear',
+                    right: 'nextYear'
+                },
+                /*scrollTime:'08:00:00',*/ //yandaki aşağı inme çubuğu nerde başlasın default 6
+                minTime: '08:00:00', //gösterilcek ilk saat
+                maxTime: '21:00:00',
+                //slotDuration: '00:15:00', //default:yarım saat, zaman aralıkları
+                //slotLabelInterval: '00:15:00', //saatleri 15dk arayla yazıyor
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                    /* omitZeroMinute:true*/ //gösterirken sıfırları alma
+                    /* meridiem:'short'*/ // takvim dili en olduğunda am ve pm gösteriyor
+
+                },
+                fixedWeekCount: true, // otomatik olarak ayda 6 hafta gösteriyor default true.
+                showNonCurrentDates: false, //birönceki ve sonraki aydan günleri göstermez sadece o ayı gösterir default true.
+                /*handleWindowResize: true,*/ //tarayıcının boyutuna göre otomatik boyutlandırıyor
+                /*windowResizeDelay: 100, *///sayfanın ne kadar süre sonra yenileneceğini söyler default:100
+                //windowResize: function (view) {
+                //    alert('Takvim yeniden boyutlandırıldı.');
+                //},
+                /*height: 450,*/  //header ve footerda dahil ediyor
+                contentHeight: 650, //sadece takvimi boyutlandırıyor
+                /*aspectRatio: 1.2,*/  //kutu en boy oranlarını değiştiriyor
+
+                defaultView: 'dayGridMonth',
+                weekends: true,
+                hiddenDays:[0], //0 pazar 6 cumartesi istediğin  günleri takvimde gizleme
+                allDaySlot: false,
+                /* firstDay:0,*/ //Pazardan başlayacak şekilde 0,1,2
+                titleFormat: {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                },
+                titleRangeSeparator: ' / ',
+                columnHeaderFormat: {
+                    //month: 'numeric',
+                    weekday: 'long'
+                    //day:'numeric'
+                },
+                views: {
+                    timeGridFourDays: {
+                        type: 'timeGrid',
+                        //dayCount: 4,
+                        duration: { days: 4 }, //gizlenmiş günleri göstermiyor
+                        buttonText: '4 Gün'
+                    }
+                },
+                //    buttonText: {
+                //        today: 'Bugün',
+                //        month: 'Ay',
+                //        week: 'Hafta',
+                //        day:'Gün'
+                //    }
+                customButtons: {
+                    addEvent: {
+                        text: 'Ekle',
+                        click: function () {
+                            var newEvent = {
+                                id: 'a',
+                                title: 'New Event',
+                                start: '2020-07-04T15:00:00.000Z',
+                                end: '2020-07-04T15:30:00.000Z'
+                            }
+
+                            calendar.addEvent(newEvent);
+                        }
+                    }
+                },
+                //eventColor: 'red', //çerçeve ve arkaplan rengi
+                //eventBackgroundColor: 'red',
+                //eventBorderColor: 'black',
+                //eventTextColor:'White',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    //second: ''
+                    /* omitZeroMinute:true*/ //gösterirken sıfırları alma
+                    /* meridiem:'narrow'*/ // takvim dili en olduğunda p ve a gösteriyor
+                },
+                /*displayEventTime:false,*/ //etkinlik zamanını gösterme default:true
+                //displayEventEnd:false, //bitiş tarihleri göstermeme
+                //eventOrder: 'title', //start,duration,allDay,title ,[],function göre event sıralama yapılabilir
+                ////aynı tarih ve saatte olanları belirttiğimiz duruma göre sıralıyor
+                //defaultDate: '2020-05-04', //takvim yüklendiğindeki başlangıç tarihi
+                //validRange: { //belirli tarihten göstermeye başlar
+                //    start:'2020-03-20' 
+                //},
+                timeZone: 'UTC', //evrensel saat dilimi
+                events: [
+                    {
+                        id: 'x',
+                        title: 'merhaba',
+                        start: '2020-07-04T08:00:00.000Z',
+                        end: '2020-07-04T10:30:00.000Z'
+                    },
+                    {
+                        id: 'y',
+                        title: 'merhaba y',
+                        start: '2020-07-04T11:00:00.000Z',
+                        end: '2020-07-04T12:30:00.000Z'
+                    }
+                ],
+                //eventRender: function (info) {
+                //    console.log(info.event.title);
+                //},
+                selectable: true,  //takvimde alanların seçilebilir özelliği
+                droppable:true, //sürüklenebilir
+                select: function (selectionInfo) {
+                    console.log(selectionInfo);
+                },
+                eventClick: function (info) { //event tıklandığında
+                    alert(info.event.title);
+                },
+                //eventMouseEnter: function (onMouse) { //mouse üstüne geldiğinde
+                //    alert(onMouse.event.start);
+                //},
+                //eventMouseLeave: function (onLeave) { //mouse üstünden gittiğinde
+                //    alert(onLeave.event.id);
+                //}
+                editable: true, //eventleri takvim üstündeyken ayarlamaya yarıyor
+                //eventStarEditable: false, //event başlangıç zamanları değiştirmeyi sağlıyor default true.
+                //eventDurationEditable: true, //zamanları değiştirmeye veya değiştirmemeye yarıyor default true.
+                //eventDragMinDistance: 100, //event güncellerken kaç piksel olacağına karar veriyor default=5 
+                //dragRevertDuration: 1500, //event yanlış olduğunda geri geriyor. default=5 
+                //dragScroll: true, //scroll otomatik olarak oynatır. default:true
+                //snapDuration:'00:15:00' //eventi 15 dk olarak oynatmaya yarıyor
+                //eventOverlap: function (stillEvent, movingEvent) {  //eventlerin çakışmasını engelliyor
+                //    //süzgeç
+                //    return stillEvent.allDay && movingEvent.allDay;
+                //},
+                //eventConstraint: {  //belirttiğim gün ve saatlerde güncellemeye izin ver
+                //    startTime: '10:00',
+                //    endTime: '19:00',
+                //    daysOfWeek:[1,2,3]
+                //},
+                //eventAllow: function (dropInfoEvent, draggedEvent) { //sürüklenen eventin özelliklerini verir.
+                //    //kontrol
+                //    console.log(dropInfoEvent.start);
+                //    return false;
+                //}
+                eventDragStart: function (info) { //eventi sürüklemeye başladığımızda olanları yazıyor
+                    console.log('başladı.');
+                },
+                eventDragStop: function (info) {
+                    console.log('bitti.');
+                },
+                eventDrop: function (eventDropInfo) { //sürüklediğimizde değişiklik varsa çalışır
+                    console.log('droped.'); //event,oldEvent,revert()
+                },
+                eventResizeStart: function (info) {  //boyutlandırma yaparken olanları kaydediyor
+                    console.log('Resize başladı.');
+                },
+                eventResizeStop: function (info) {
+                    console.log('Resize bitti.');
+                },
+                eventResize: function (eventResizeInfo) {
+                    //event,prevEvent,revert() //revert:aksilik olursa olanları geri almaya yarar
+                    console.log('Resize edildi.');
+                    //eventResizeInfo.revert();
+                },
+                //---------------------Dışardan sürüklediğimiz eventler için----------------------//
+                drop: function (dropInfo) {
+                    console.log('drop edildi.'); //allDay,date,dateString,draggedEl özelliğine ulaşabiliriz
+                },
+                eventReceive: function (info) {
+                    console.log('Receive methodu tetiklendi.'); //draggedEl,event ulaşabiliriz, içinde data olduğunda çalışır.
+                },
+                eventLeave: function (info) {
+                    console.log('Leave edildi.'); //takvimler arasında olaylar sürüklendiğinde çalışır
+                },
+                dropAccept: '#isValid'   //id si isValidse eventi sürükleyip kabul et
+
+                //dropAccept:'.fc-event'  //classı fc-event olanları sürükleyip ekle
+
+            });
+            calendar.render(); 
+            var events = calendar.getEvents();
+            console.log(events);
+
+            var id = 'x';
+            var event = calendar.getEventById(id);
+            console.log(event);
+
+            //calender.renderEvents(); //eventleri render etmek için
+        });
+    </script>
+}
